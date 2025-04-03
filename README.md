@@ -1,8 +1,5 @@
----
 
 # 😊 Emotion Detection Sentiment Analysis  
-
-![Demo GIF](https://media.giphy.com/media/QTfX9Ejfra3ZmNxh6B/giphy.gif)  
 
 ## 🚀 Live Demo  
 🔗 [Click here to view the app](https://emotiondetectionapp-hrak.onrender.com)  
