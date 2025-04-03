@@ -7,6 +7,10 @@
 ## 📌 About the Project  
 This project is an **AI-powered emotion detection system** that classifies text into different emotions using **Machine Learning and Natural Language Processing (NLP)**.  
 
+## 🎭 Preview  
+📌 *Watch a quick demo of the app below!*  
+![Streaming GIF](https://github.com/AnaghaSathyanarayanan/EmotionDetectionApp/blob/main/assets/demo.gif)  
+
 ### 🔍 **Features**  
 ✅ Detects emotions from text input in real-time  
 ✅ Supports multiple emotions (e.g., Happiness, Sadness, Anger, Fear, Surprise)  
@@ -89,12 +93,6 @@ git push origin main
    streamlit run app.py
    ```
 6. Click **Deploy** 🎉  
-
----
-
-## 🎭 Preview  
-📌 *Watch a quick demo of the app below!*  
-![Streaming GIF](https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif)  
 
 ---  
 
