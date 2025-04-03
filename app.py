@@ -1,54 +1,69 @@
 import streamlit as st
 import joblib
+import base64
 
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-image: url("https://www.freepik.com/free-psd/3d-background-with-emojis_35308564.htm#fromView=keyword&page=1&position=42&uuid=8e7d454d-7550-45bd-8a51-1b59e4a46242&query=Emoji+Wallpaper");
-        background-size: cover;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# ✅ Function to set background image
+def set_background(image_file):
+    with open(image_file, "rb") as f:
+        img_data = f.read()
+    img_base64 = base64.b64encode(img_data).decode()  # ✅ Corrected Encoding
 
+    # ✅ Inject CSS for background image
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{img_base64}");
+            background-size: cover;
+            background-position: center;
+        }}
+        h3 {{
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px black;
+            font-size: 28px;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-# ✅ Load model and vectorizer
+# ✅ Set the background
+set_background("assets/emotion_icon.jpg")  # Adjust path if needed
+
+# ✅ Load trained model and vectorizer
 model = joblib.load("emotion_model.pkl")
 vectorizer = joblib.load("vectorizer.pkl")
 
-# ✅ Updated Label Mapping to Match Dataset
+# ✅ Emotion label mapping with emojis ✨
 label_mapping = {
-    0: "Sadness",
-    1: "Joy",
-    2: "Love",
-    3: "Anger",
-    4: "Fear",
-    5: "Surprise"  # Match title-case format
+    0: "😢 **Sadness**",
+    1: "😊 **Joy**",
+    2: "❤️ **Love**",
+    3: "😠 **Anger**",
+    4: "😨 **Fear**",
+    5: "😲 **Surprise**"
 }
 
-# ✅ Streamlit App
+# ✅ Streamlit UI
 st.title("😊 Emotion Detection App")
+st.write("Enter a sentence to detect its emotion.")
 
-col1, col2 = st.columns([1, 2])
+# ✅ User Input
+user_input = st.text_area("Enter your sentence:")
 
-with col1:
-    st.image("emotion_icon.png", width=150)  # Add a small icon
+if st.button("🚀 Predict Emotion"):
+    if user_input.strip() == "":
+        st.warning("⚠️ Please enter a valid sentence!")
+    else:
+        # ✅ Convert user input to model features
+        input_features = vectorizer.transform([user_input])
 
-with col2:
-    st.subheader("Enter your text below to detect emotions")
+        # ✅ Predict emotion
+        prediction = model.predict(input_features)[0]  # Extract single value
 
-user_input = st.text_area("Type your sentence here...")
+        # ✅ Map numeric prediction to emotion label with emoji
+        predicted_emotion = label_mapping.get(prediction, "🤔 **Unknown Emotion**")
 
-if st.button("🚀 Detect Emotion"):
-    with st.spinner("Analyzing... Please wait!"):
-        result = predict_emotion(user_input)  # Call your ML function
-    emotion_colors = {
-        "Happy": "🟢",
-        "Sad": "🔵",
-        "Angry": "🔴",
-        "Neutral": "⚪"
-    }
-    st.markdown(f"**Detected Emotion:** {emotion_colors[result]} {result}", unsafe_allow_html=True)
-
+        # ✅ Display result with black outlined text
+        st.markdown(f"<h3>Predicted Emotion: {predicted_emotion}</h3>", unsafe_allow_html=True)
