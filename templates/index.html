@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion Detection App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('{{ url_for("static", filename="assets/emotion_icon.jpg") }}');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 120px;
+            margin-bottom: 1.2rem;
+        }
+
+        button {
+            background-color: #6c63ff;
+            color: white;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5548e6;
+        }
+
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .examples button {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 2rem;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .examples button:hover {
+            background-color: #ddd;
+        }
+
+        .footer {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <div class="container">
+            <h1>🎭 Emotion Detector</h1>
+            <form action="/predict" method="post">
+                <textarea name="text" id="inputText" placeholder="Type or paste a sentence..."></textarea>
+                
+                <div class="examples">
+                    <button type="button" onclick="setExample('I feel so lonely.')">Sadness 😢</button>
+                    <button type="button" onclick="setExample('I am extremely happy and excited today!')">Joy 😄</button>
+                    <button type="button" onclick="setExample('I cherish being loved.')">Love ❤️</button>
+                    <button type="button" onclick="setExample('I am so mad about this situation!')">Anger 😠</button>
+                    <button type="button" onclick="setExample('I\'m terrified of what might happen next.')">Fear 😨</button>
+                    <button type="button" onclick="setExample('I\'m amazed!')">Surprise 😲</button>
+                </div>
+
+                <button type="submit">Detect Emotion</button>
+            </form>
+            <div class="footer"></div>
+        </div>
+    </div>
+
+    <script>
+        function setExample(text) {
+            document.getElementById('inputText').value = text;
+        }
+    </script>
+</body>
+</html>

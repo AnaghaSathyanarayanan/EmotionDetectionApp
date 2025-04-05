@@ -1,69 +1,72 @@
-import streamlit as st
-import joblib
-import base64
+from flask import Flask, render_template, request, jsonify
+import pickle
+import nltk
 
-# ✅ Function to set background image
-def set_background(image_file):
-    with open(image_file, "rb") as f:
-        img_data = f.read()
-    img_base64 = base64.b64encode(img_data).decode()  # ✅ Corrected Encoding
+# Initialize Flask app
+app = Flask(__name__)
 
-    # ✅ Inject CSS for background image
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/png;base64,{img_base64}");
-            background-size: cover;
-            background-position: center;
-        }}
-        h3 {{
-            text-align: center;
-            color: white;
-            text-shadow: 2px 2px 4px black;
-            font-size: 28px;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+# Download NLTK tokenizer if needed
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 
-# ✅ Set the background
-set_background("assets/emotion_icon.jpg")  # Adjust path if needed
+# Load model and vectorizer
+try:
+    with open('vectorizer.pkl', 'rb') as f:
+        vectorizer = pickle.load(f)
 
-# ✅ Load trained model and vectorizer
-model = joblib.load("emotion_model.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
+    with open('emotion_model.pkl', 'rb') as f:
+        model = pickle.load(f)
 
-# ✅ Emotion label mapping with emojis ✨
-label_mapping = {
-    0: "😢 **Sadness**",
-    1: "😊 **Joy**",
-    2: "❤️ **Love**",
-    3: "😠 **Anger**",
-    4: "😨 **Fear**",
-    5: "😲 **Surprise**"
-}
+    emotion_labels = list(model.classes_)  # Use model's class labels
 
-# ✅ Streamlit UI
-st.title("😊 Emotion Detection App")
-st.write("Enter a sentence to detect its emotion.")
+    print("Model and vectorizer loaded successfully!")
+except Exception as e:
+    print(f"Error loading model or vectorizer: {e}")
+    emotion_labels = []
 
-# ✅ User Input
-user_input = st.text_area("Enter your sentence:")
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-if st.button("🚀 Predict Emotion"):
-    if user_input.strip() == "":
-        st.warning("⚠️ Please enter a valid sentence!")
-    else:
-        # ✅ Convert user input to model features
-        input_features = vectorizer.transform([user_input])
+@app.route('/predict', methods=['POST'])
+def predict():
+    if request.method == 'POST':
+        try:
+            # Handle form or JSON input
+            if request.content_type == 'application/json':
+                data = request.get_json()
+                text = str(data.get('text', ''))
+            else:
+                text = str(request.form.get('text', ''))
 
-        # ✅ Predict emotion
-        prediction = model.predict(input_features)[0]  # Extract single value
+            if not text.strip():
+                return jsonify({'error': 'No text provided'})
 
-        # ✅ Map numeric prediction to emotion label with emoji
-        predicted_emotion = label_mapping.get(prediction, "🤔 **Unknown Emotion**")
+            # Directly vectorize without cleaning
+            text_vectorized = vectorizer.transform([text])
+            probabilities = model.predict_proba(text_vectorized)[0]
+            max_prob_index = probabilities.argmax()
+            predicted_emotion = emotion_labels[max_prob_index]
 
-        # ✅ Display result with black outlined text
-        st.markdown(f"<h3>Predicted Emotion: {predicted_emotion}</h3>", unsafe_allow_html=True)
+            result = {
+                'original_text': text,
+                'predicted_emotion': predicted_emotion
+            }
+
+            if request.content_type == 'application/json':
+                return jsonify(result)
+            else:
+                return render_template('result.html', result=result)
+
+        except Exception as e:
+            error_msg = f"Error during prediction: {str(e)}"
+            print(error_msg)
+            if request.content_type == 'application/json':
+                return jsonify({'error': error_msg})
+            else:
+                return render_template('error.html', error=error_msg)
+
+if __name__ == '__main__':
+    app.run(debug=True)
