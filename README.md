@@ -150,8 +150,8 @@ Found a bug or have an idea for improvement? Feel free to fork this repo and sub
 
 ---
 
-## 🧑‍💻 Author  
-Made with ❤️ by [Anagha Sathyanarayanan](https://github.com/AnaghaSathyanarayanan)
+##  Author  
+Made by [Anagha Sathyanarayanan](https://github.com/AnaghaSathyanarayanan)
 
 ---
 

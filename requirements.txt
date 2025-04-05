@@ -1,4 +1,8 @@
-streamlit
-pandas
+flask
 scikit-learn
-joblib
+nltk
+numpy
+gunicorn
+pandas
+matplotlib
+jupyter
